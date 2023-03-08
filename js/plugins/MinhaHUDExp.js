@@ -1,62 +1,46 @@
+var _Scene_Map_create = Scene_Map.prototype.create;
+Scene_Map.prototype.create = function() {
+    _Scene_Map_create.call(this);
+    this.createExpHud();
+};
 
-(function() {
+Scene_Map.prototype.createExpHud = function() {
+    this._expHudSprite = new Sprite();
+    this.addChild(this._expHudSprite);
+    var expImageName = $gameVariables.value(7); // variável com o nome da imagem
+    var bitmap = ImageManager.loadPicture(expImageName);
+    this._expHudSprite.bitmap = bitmap;
+    this._expHudSprite.x = 0; // coordenada X da imagem
+    this._expHudSprite.y = 0; // coordenada Y da imagem
+    this._expHudSprite.interactive = true;
+    this._expHudSprite.buttonMode = true;
+    this._expHudSprite.on('pointerdown', function(event) {
+        this.data = event.data;
+        this.dragging = true;
+    });
+    this._expHudSprite.on('pointerup', function() {
+        this.dragging = false;
+        this.data = null;
+    });
+    this._expHudSprite.on('pointerupoutside', function() {
+        this.dragging = false;
+        this.data = null;
+    });
+    this._expHudSprite.on('pointermove', function() {
+        if (this.dragging) {
+            var newPosition = this.data.getLocalPosition(this.parent);
+            this.x = newPosition.x - this.width / 2;
+            this.y = newPosition.y - this.height / 2;
+        }
+    });
+};
 
-  var _SceneMap_createAllWindows = Scene_Map.prototype.createAllWindows;
-  Scene_Map.prototype.createAllWindows = function() {
-      _SceneMap_createAllWindows.call(this);
-      this.createExpHUD();
-  };
-
-  Scene_Map.prototype.createExpHUD = function() {
-      this._expHUD = new Window_ExpHUD(0, 0, Graphics.width, 60);
-      this.addWindow(this._expHUD);
-  };
-
-  var _Game_Interpreter_pluginCommand = Game_Interpreter.prototype.pluginCommand;
-  Game_Interpreter.prototype.pluginCommand = function(command, args) {
-      _Game_Interpreter_pluginCommand.call(this, command, args);
-      if (command === 'setExp') {
-          $gameVariables.setValue(EXP, parseInt(args[0]));
-          SceneManager._scene._expHUD.refresh();
-      } else if (command === 'setLevel') {
-          $gameVariables.setValue(LEVEL, parseInt(args[0]));
-          SceneManager._scene._expHUD.refresh();
-      }
-  };
-
-  function Window_ExpHUD() {
-      this.initialize.apply(this, arguments);
-  }
-
-  Window_ExpHUD.prototype = Object.create(Window_Base.prototype);
-  Window_ExpHUD.prototype.constructor = Window_ExpHUD;
-
-  Window_ExpHUD.prototype.initialize = function(x, y, width, height) {
-      Window_Base.prototype.initialize.call(this, x, y, width, height);
-      this.refresh();
-  };
-
-  Window_ExpHUD.prototype.refresh = function() {
-      this.contents.clear();
-      this.drawExp();
-  };
-
-  Window_ExpHUD.prototype.drawExp = function() {
-      var x = 0;
-      var y = 0;
-      var width = this.contents.width;
-      var level = $gameVariables.value(9);
-      var expNeeded = Math.round((level * 10) * (level / 5));
-      var currentExp = $gameVariables.value(7);
-      console.log(level)
-      console.log(currentExp)
-      console.log(expRate)
-      var expRate = currentExp / expNeeded;
-      this.drawText(`Lv: ${9}`, x, y, width);
-      this.drawText(`EXP: ${7}`, x, y, width);
-      this.drawGauge(x + 150, y, width - 150, expRate, this.textColor(14), this.textColor(6));
-      this.drawText(currentExp + "/" + expNeeded, x + 150, y, width);
-      
-  };
-  
-})();
+var _Window_Base_drawActorExp = Window_Base.prototype.drawActorExp;
+Window_Base.prototype.drawActorExp = function(actor, x, y, width) {
+    _Window_Base_drawActorExp.call(this, actor, x, y, width);
+    var gaugeX = x + this.textWidth('HP ');
+    var gaugeY = y + this.lineHeight() * 2;
+    var gaugeWidth = width - gaugeX - this.textWidth('000000/000000');
+    var gaugeHeight = this.gaugeHeight();
+    this.drawGauge(gaugeX, gaugeY, gaugeWidth, actor.currentExp() / actor.nextLevelExp(), this.expGaugeColor1(), this.expGaugeColor2());
+};
