@@ -8,6 +8,5 @@ var $plugins =
 {"name":"morte_efeito","status":true,"description":"Adiciona um efeito de morte nos inimigos na batalha quando eles são derrotados pelo jogador.","parameters":{"Death Animation":"65","Death Sound":"Battle3","Death Volume":"90","Death Pitch":"100","Death Pan":"0","Screen Shake":"true"}},
 {"name":"CustomGameOver","status":false,"description":"Remove o ícone de batalha em cima de um inimigo específico na batalha. Adicione a tag <remove_icon> na notas do inimigo para ativar. Exemplo: <remove_icon>.","parameters":{}},
 {"name":"skill","status":false,"description":"Plugin de habilidades com janela no menu.","parameters":{}},
-{"name":"hudhpinimigo","status":false,"description":"","parameters":{}},
-{"name":"ClickableImage","status":true,"description":"","parameters":{}}
+{"name":"hudhpinimigo","status":false,"description":"","parameters":{}}
 ];
